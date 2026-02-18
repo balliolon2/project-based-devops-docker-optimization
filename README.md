@@ -174,3 +174,45 @@ func main() {
     - "Docker layer caching best practices"
         
 4. **Do Phase 2:** เขียน Dockerfile ใหม่ (ตั้งชื่อ `Dockerfile.optimized`) แล้วเทียบผลลัพธ์
+
+แยกส่วนระหว่าง Source Code (ของ Dev) กับ Infrastructure Config (ของ DevOps) ออกจากกัน
+
+```
+sentinel-exam/                  <-- Root Folder โปรเจกต์หลัก
+│
+├── src/                        <-- เก็บ Code ของโปรแกรม (เหมือนที่ Dev ส่งมาให้)
+│   ├── main.go                 <-- (หรือ app.py ถ้าใช้ Python)
+│   ├── requirements.txt        <-- (ถ้าใช้ Python)
+│   └── .env                    <-- (ไฟล์ความลับที่ Dev เผลอใส่มา - ห้ามเอาเข้า Docker จริงนะ!)
+│
+├── phase1_messy/               <-- พื้นที่สำหรับ Phase 1 (ทำให้รันได้)
+│   └── Dockerfile              <-- Dockerfile แบบดิบๆ (Base image เต็ม, รัน root)
+│
+├── phase2_clean/               <-- พื้นที่สำหรับ Phase 2 (Best Practice)
+│   ├── Dockerfile              <-- Dockerfile ที่จูนแล้ว (Multi-stage, User non-root)
+│   ├── .dockerignore           <-- ไฟล์สำคัญ! บอก Docker ว่าอย่าเอาอะไรเข้าไปบ้าง
+│   └── docker-compose.yml      <-- (Optional) ไว้รันเทสแบบง่ายๆ
+│
+└── docs/                       <-- เก็บรายงานผลการทดลอง
+    └── report.md               <-- สรุปผล Comparison (Size, Build Time)
+```
+
+src/.env
+
+```
+DB_HOST=production-db.internal
+DB_PASS=SuperSecretPassword1234
+```
+
+How to run Dockerfile
+- at Dockerfile folder (จะมีปัญหาตอน install file ที่ไม่ได้อยู่ใน folder ฉนั้น ไม่แนะนำ)
+
+```
+docker build -t {image_name}:{tag} .
+```
+
+- not at Dockerfile folder (แนะนำ)
+
+```
+docker build -f {path e.g. phase1_messy/Dockerfile} -t {image_name}:{tag} .
+```

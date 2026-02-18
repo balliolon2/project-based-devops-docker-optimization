@@ -1,0 +1,18 @@
+# 1. อย่าเอา git history เข้าไป (ใหญ่และไม่จำเป็น)
+.git
+.gitignore
+
+# 2. อย่าเอาขยะ Python เข้าไป
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+# 3. อย่าเอาไฟล์ Config หรือ Secret เข้าไป
+.env
+src/.env
+
+# 4. อย่าเอา Dockerfile ของเฟสอื่นๆ เข้าไป
+phase1_messy
+phase2_clean
+docs
